@@ -21,10 +21,12 @@ class Keyphrase
     clean_regex = options[:clean] || CLEAN_REGEX
     position_bonus = options[:position_bonus] || true
     sort = options[:sort] || true
+    blacklist = options[:blacklist] || BLACKLIST_REGEX
+    sentences_regex = options[:sentences_regex] || SENTENCES_REGEX
 
     pattern    = buildStopwordRegExPattern stoplist, lang
-    sentences  = text.split SENTENCES_REGEX
-    phrases    = generateCandidateKeywords sentences, pattern, clean_regex
+    sentences  = text.split sentences_regex
+    phrases    = generateCandidateKeywords sentences, pattern, clean_regex, blacklist
     wordscores = calculateWordScores phrases
     candidates = generateCandidateKeywordScores phrases, wordscores, position_bonus
 
@@ -59,14 +61,14 @@ class Keyphrase
 
   # generate candidate keywords
   # 2
-  def generateCandidateKeywords sentences, stopwords_regex, clean_regex
+  def generateCandidateKeywords sentences, stopwords_regex, clean_regex, blacklist
     phrases = Array.new
 
     filtered_sentences = sentences.map { |sentence| sentence.gsub(clean_regex, " ").gsub(stopwords_regex, "|") }
 
     filtered_sentences.each do |parts|
       parts.split("|").each do |part|
-        part = part.gsub(BLACKLIST_REGEX, " ").strip
+        part = part.gsub(blacklist, " ").strip
 
         if !part.empty?
           phrases.push part
