@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-require "pry"
 
 RSpec.describe Keyphrase do
   it "has a version number" do
