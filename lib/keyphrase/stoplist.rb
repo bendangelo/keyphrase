@@ -4,12 +4,18 @@ module Keyphrase::Stoplist
     require_relative file
   end
 
-  def self.stopwords
-    stoplist_classes.map { |klass| klass.stopwords }
+  def self.stopwords lang, type=:smart
+    cl = const_get(lang.to_s.capitalize)
+
+    if type == :strict
+      cl.strict
+    else
+      cl.smart
+    end
   end
 
   def self.stoplist_classes
-    constants.map { |const| const_get(const) }
+    constants.map { |const|  }
   end
 
 end
