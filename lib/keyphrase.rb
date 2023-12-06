@@ -6,9 +6,10 @@ class Keyphrase
 
   autoload :Stoplist, "keyphrase/stoplist"
 
-  CLEAN_REGEX = /([^a-zA-Z0-9'\- \.]|(?<!\w)'|(?<!\w)\.)/
-  BLACKLIST_REGEX = /(?:^|\s)[^a-zA-Z\-\']+\b/
-  SENTENCES_REGEX = /[+!?,;:&\[\]\{\}\<\>\=\/\n\t\\"\\(\\)\u2019\u2013\|]|-(?!\w)|(?<!\w)'(?!\w)|(?<!\s)\.(?![a-zA-Z0-9])|(?<!\w)\#(?=\w)/u
+  CLEAN_REGEX = /([^a-zA-Z0-9\'\- \.]|(?<!\w)\.)/ # don't remove ' because it might be part of a stop word
+  BLACKLIST_REGEX = /(?:^|\s)[^a-zA-Z\-]+\b|\'/ # remove words with no letters, ie 123.23.12. And last chance to remove '
+  CLEAN_SPACES_REGEX = /\s+/
+  SENTENCES_REGEX = /[+!?,;:&\[\]\{\}\<\>\=\/\n\t\\"\\(\\)\u2019\u2013\|]|-(?!\w)|'(?=s)|(?<!\s)\.(?![a-zA-Z0-9])|(?<!\w)\#(?=\w)/u
 
   def self.analyse text, options={}
     @@keyphrase ||= Keyphrase.new
@@ -23,10 +24,11 @@ class Keyphrase
     sort = options[:sort] || true
     blacklist = options[:blacklist] || BLACKLIST_REGEX
     sentences_regex = options[:sentences_regex] || SENTENCES_REGEX
+    clean_spaces_regex = options[:clean_spaces_regex] || CLEAN_SPACES_REGEX
 
     pattern    = buildStopwordRegExPattern stoplist, lang
     sentences  = text.split sentences_regex
-    phrases    = generateCandidateKeywords sentences, pattern, clean_regex, blacklist
+    phrases    = generateCandidateKeywords sentences, pattern, clean_regex, blacklist, clean_spaces_regex
     wordscores = calculateWordScores phrases
     candidates = generateCandidateKeywordScores phrases, wordscores, position_bonus
 
@@ -61,14 +63,14 @@ class Keyphrase
 
   # generate candidate keywords
   # 2
-  def generateCandidateKeywords sentences, stopwords_regex, clean_regex, blacklist
+  def generateCandidateKeywords sentences, stopwords_regex, clean_regex, blacklist, clean_spaces_regex
     phrases = Array.new
 
     filtered_sentences = sentences.map { |sentence| sentence.gsub(clean_regex, " ").gsub(stopwords_regex, "|") }
 
     filtered_sentences.each do |parts|
       parts.split("|").each do |part|
-        part = part.gsub(blacklist, " ").strip
+        part = part.gsub(blacklist, " ").gsub(clean_spaces_regex, " ").strip
 
         if !part.empty?
           phrases.push part

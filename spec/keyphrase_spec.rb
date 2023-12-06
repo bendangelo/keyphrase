@@ -25,13 +25,13 @@ RSpec.describe Keyphrase do
       it do
         result = Keyphrase.analyse "Secrets Of The Smithsonian: Humanity's Hidden History | Jay Myers"
 
-        expect(result.keys).to eq ["Humanity's Hidden History", "The Smithsonian", "Jay Myers", "Secrets"]
+        expect(result.keys).to eq ["The Smithsonian", "Hidden History", "Jay Myers", "Secrets", "Humanity"]
       end
 
       it "should remove non-words" do
-        result = Keyphrase.analyse "re-move these's: 's & + ! @ # $ % ^ & * ( ) \\ | [ ] { } / ? ~ ` = - _ , . 🎄 £"
+        result = Keyphrase.analyse "re-move these's: 's & + ! @ # $ % ^ & * ( ) \\ | [ ] { } / ? ~ ` = - _ , . 🎄 £ tommy'humanity fff' 'fff don't"
 
-        expect(result.keys).to eq ["re-move these's"]
+        expect(result.keys).to eq ["tommy humanity fff fff", "re-move"]
       end
 
       it do
