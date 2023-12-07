@@ -66,15 +66,23 @@ class Keyphrase
   def generateCandidateKeywords sentences, stopwords_regex, clean_regex, blacklist, clean_spaces_regex
     phrases = Array.new
 
-    filtered_sentences = sentences.map { |sentence| sentence.gsub(clean_regex, " ").gsub(stopwords_regex, "|") }
+    # first clean by removing unwanted special chars
+    # second remove all stop words
+    # third, remove uncaught stopwords in second pass
+    # using a | as an easy way to divide the text by stopwords
+    filtered_sentences = sentences.map { |sentence| sentence.gsub(clean_regex, " ").gsub(stopwords_regex, " | ").gsub(stopwords_regex, "|") }
 
     filtered_sentences.each do |parts|
       parts.split("|").each do |part|
+        next if part.empty?
+
+        # remove blacklisted things, like 1234.45.34
+        # clean up spacing between words
         part = part.gsub(blacklist, " ").gsub(clean_spaces_regex, " ").strip
 
-        if !part.empty?
-          phrases.push part
-        end
+        next if part.empty?
+
+        phrases.push part
       end
     end
 
@@ -118,7 +126,7 @@ class Keyphrase
   # 4
   def generateCandidateKeywordScores phrases, scores, position_bonus
     candidates = Hash.new 0
-    word_index = 0
+    phrase_index = 0
 
     phrases.each do |phrase|
       words = seperateWords(phrase)
@@ -126,13 +134,15 @@ class Keyphrase
       words.each do |word|
         score += scores[word]
 
-        # Normalize the score based on the position
-        if position_bonus
-          normalized_score = 1.0 / (word_index + 1)
-          score += normalized_score
-          word_index += 1
-        end
       end
+
+      # Boost score based on the phrase position in the text
+      if position_bonus
+        normalized_score = 1.0 / (phrase_index + 1)
+        score += normalized_score
+        phrase_index += 1
+      end
+
       candidates[phrase] = score
     end
 

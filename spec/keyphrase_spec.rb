@@ -12,20 +12,20 @@ RSpec.describe Keyphrase do
         result = Keyphrase.analyse "Chopin - Nocturne op.9 No.2 F#"
 
         expect(result.keys).to eq ["Nocturne op.9 No.2", "Chopin" ]
-        expect(result["Nocturne op.9 No.2"]).to eq 10.083333333333332
+        expect(result["Nocturne op.9 No.2"]).to eq 9.5
       end
 
       it do
         result = Keyphrase.analyse "Do You See It...Yet? | New York Nadia
         poem written and performed by New York Nadia (Nadia Asencio); video production by The Raw Speak and IZ Parrot"
 
-        expect(result.keys).to eq ["The Raw Speak", "New York Nadia", "York Nadia", "Nadia Asencio", "poem written", "video production", "IZ Parrot", "You", "It", "performed"]
+        expect(result.keys).to eq ["York Nadia", "poem written", "Nadia Asencio", "video production", "Raw Speak", "IZ Parrot", "performed"]
       end
 
       it do
-        result = Keyphrase.analyse "Secrets Of The Smithsonian: Humanity's Hidden History | Jay Myers"
+        result = Keyphrase.analyse "Secrets Of The The The Smithsonian: Humanity's Hidden History | Jay Myers"
 
-        expect(result.keys).to eq ["The Smithsonian", "Hidden History", "Jay Myers", "Secrets", "Humanity"]
+        expect(result.keys).to eq ["Hidden History", "Jay Myers", "Secrets", "Smithsonian", "Humanity"]
       end
 
       it "should remove non-words" do
@@ -63,7 +63,7 @@ RSpec.describe Keyphrase do
       it "should split on &" do
         result = Keyphrase.analyse "Making & Cutting Sex on The Beach for BeScented Fragrance Oil Supply"
 
-        expect(result.keys).to eq ["BeScented Fragrance Oil Supply", "Cutting Sex", "The Beach", "Making"]
+        expect(result.keys).to eq ["BeScented Fragrance Oil Supply", "Cutting Sex", "Making", "Beach"]
       end
 
       it do
