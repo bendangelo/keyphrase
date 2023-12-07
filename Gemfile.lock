@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    keyphrase (0.1.1)
+    keyphrase (0.1.2)
 
 GEM
   remote: https://rubygems.org/
