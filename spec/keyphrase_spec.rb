@@ -31,7 +31,7 @@ RSpec.describe Keyphrase do
       it "should remove non-words" do
         result = Keyphrase.analyse "re-move these's: 's & + ! @ # $ % ^ & * ( ) \\ | [ ] { } / ? ~ ` = - _ , . 🎄 £ tommy'humanity fff' 'fff don't"
 
-        expect(result.keys).to eq ["tommy humanity fff fff", "re-move"]
+        expect(result.keys).to eq ["tommy humanity fff fff", "re move"]
       end
 
       it do
@@ -51,7 +51,7 @@ RSpec.describe Keyphrase do
         result = Keyphrase.analyse "The Lofi Roman Empire - Music Of Ancient Rome | sleep, study, meditation
         My homage to ancient Rome. Lo-Fi Beats + the Roman Empire works suprisingly well (:"
 
-        expect(result.keys).to eq ["Roman Empire works suprisingly", "Lofi Roman Empire", "Lo-Fi Beats", "Ancient Rome", "Music", "sleep", "study", "meditation", "homage"]
+        expect(result.keys).to eq ["Roman Empire works suprisingly", "Lofi Roman Empire", "Lo Fi Beats", "Ancient Rome", "Music", "sleep", "study", "meditation", "homage"]
       end
 
       it "should split hashtags into own keywords" do
