@@ -6,8 +6,8 @@ class Keyphrase
 
   autoload :Stoplist, "keyphrase/stoplist"
 
-  CLEAN_REGEX = /([^a-zA-Z0-9\'\- \.]|(?<!\w)\.)/ # don't remove ' because it might be part of a stop word
-  BLACKLIST_REGEX = /(?:^|\s)[^a-zA-Z]+\b|\'|\-/ # remove words with no letters, ie 123.23.12. And last chance to remove ' and -
+  CLEAN_REGEX = /([^\p{L}a-zA-Z0-9\'\- \.]|(?<!\w)\.)/ # don't remove ' because it might be part of a stop word
+  BLACKLIST_REGEX = /(?:^|\s)[^a-zA-Z\p{L}]+\b|\'|\-/ # remove words with no letters, ie 123.23.12. And last chance to remove ' and -
   CLEAN_SPACES_REGEX = /\s+/
   SENTENCES_REGEX = /[+!?,;:&\[\]\{\}\<\>\=\/\n\t\\"\\(\\)\u2019\u2013\|]|-(?!\w)|'(?=s)|(?<!\s)\.(?![a-zA-Z0-9])|(?<!\w)\#(?=\w)/u
 
@@ -16,8 +16,12 @@ class Keyphrase
     @@keyphrase.analyse text, options
   end
 
+  def initialize
+    @cached_regex = {}
+  end
+
   def analyse text, options={}
-    stoplist = options[:stoplist] || :smart
+    stopwords = options[:stopwords]
     lang = options[:lang] || :eng
     clean_regex = options[:clean] || CLEAN_REGEX
     position_bonus = options[:position_bonus] || true
@@ -26,7 +30,7 @@ class Keyphrase
     sentences_regex = options[:sentences_regex] || SENTENCES_REGEX
     clean_spaces_regex = options[:clean_spaces_regex] || CLEAN_SPACES_REGEX
 
-    pattern    = buildStopwordRegExPattern stoplist, lang
+    pattern    = buildStopwordRegExPattern lang, stopwords
     sentences  = text.split sentences_regex
     phrases    = generateCandidateKeywords sentences, pattern, clean_regex, blacklist, clean_spaces_regex
     wordscores = calculateWordScores phrases
@@ -49,16 +53,20 @@ class Keyphrase
 
   # create stopword pattern
   # 1
-  def buildStopwordRegExPattern stopwords, lang
+  def buildStopwordRegExPattern lang, stopwords = nil
+    stopwords ||= Keyphrase::Stoplist.stopwords_for_lang lang
 
-    if stopwords.is_a? Symbol
-      # use caching
-      return Keyphrase::Stoplist.stopwords lang, stopwords
+    # Check if the regex for the given language and stopwords is already cached
+    if @cached_regex[lang].nil? || @cached_regex[lang][:stopwords] != stopwords
+      # If not cached or stopwords have changed, recompile the regex and store in the cache
+      @cached_regex[lang] = {
+        stopwords: stopwords,
+        regex: Regexp.new("(?:^|\\s)(?:#{stopwords.join('|')})(?:$|\\s)", Regexp::IGNORECASE | Regexp::MULTILINE)
+      }
     end
 
-    stop_regex = /(?:^|\s)(?:#{stopwords.join('|')})(?:$|\s)/io
-
-    return stop_regex
+    # Return the cached regex
+    @cached_regex[lang][:regex]
   end
 
   # generate candidate keywords

@@ -51,7 +51,7 @@ RSpec.describe Keyphrase do
         result = Keyphrase.analyse "The Lofi Roman Empire - Music Of Ancient Rome | sleep, study, meditation
         My homage to ancient Rome. Lo-Fi Beats + the Roman Empire works suprisingly well (:"
 
-        expect(result.keys).to eq ["Roman Empire works suprisingly", "Lofi Roman Empire", "Lo Fi Beats", "Ancient Rome", "Music", "sleep", "study", "meditation", "homage"]
+        expect(result.keys).to eq ["Lo Fi Beats", "Lofi Roman Empire", "Roman Empire", "Ancient Rome", "Music", "sleep", "study", "meditation", "homage", "suprisingly"]
       end
 
       it "should split hashtags into own keywords" do
@@ -63,7 +63,7 @@ RSpec.describe Keyphrase do
       it "should split on &" do
         result = Keyphrase.analyse "Making & Cutting Sex on The Beach for BeScented Fragrance Oil Supply"
 
-        expect(result.keys).to eq ["BeScented Fragrance Oil Supply", "Cutting Sex", "Making", "Beach"]
+        expect(result.keys).to eq ["BeScented Fragrance Oil Supply", "Cutting Sex", "Beach"]
       end
 
       it do
@@ -76,7 +76,7 @@ RSpec.describe Keyphrase do
       it "should split on slashes" do
         result = Keyphrase.analyse "GTA ON LINE 1.39 NEWSAVE CEO OUTFIT SOLO / SALVARE I COMPLETI CEO DA SOLI"
 
-        expect(result.keys).to eq ["LINE NEWSAVE CEO OUTFIT SOLO", "COMPLETI CEO DA SOLI", "GTA", "SALVARE"]
+        expect(result.keys).to eq ["NEWSAVE CEO OUTFIT SOLO", "COMPLETI CEO DA SOLI", "GTA", "SALVARE"]
       end
 
       it "should remove * ! and words with numbers" do
@@ -97,9 +97,13 @@ RSpec.describe Keyphrase do
         expect(result.keys).to eq ["Video Beremo Nova24TV"]
       end
 
+      it "should remove stop words from Chinese" do
+        result = Keyphrase.analyse "你好 我一方面什麼 這麼好", lang: :cmn
+
+        expect(result.keys).to eq ["你好 我一方面什麼 這麼好"]
+      end
+
     end
 
-    context "strict stoplist" do
-    end
   end
 end

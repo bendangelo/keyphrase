@@ -1,21 +1,24 @@
 module Keyphrase::Stoplist
-  # Dynamically require all files in the stoplist directory
-  Dir[File.join(__dir__, 'stoplist', '*.rb')].each do |file|
-    require_relative file
-  end
+  class << self
+    # Class variable to store filenames
+    @@file_names = []
 
-  def self.stopwords lang, type=:smart
-    cl = const_get(lang.to_s.capitalize)
-
-    if type == :strict
-      cl.strict
-    else
-      cl.smart
+    # Method to retrieve the array of filenames
+    def languages
+      @@file_names
     end
   end
 
-  def self.stoplist_classes
-    constants.map { |const|  }
+  # Dynamically require all files in the stoplist directory
+  Dir[File.join(__dir__, 'stoplist', '*.rb')].each do |file|
+    require_relative file
+    @@file_names << File.basename(file, '.rb').to_sym
+  end
+
+  def self.stopwords_for_lang lang
+    cl = const_get(lang.to_s.capitalize)
+
+    cl.stopwords
   end
 
 end
