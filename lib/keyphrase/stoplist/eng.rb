@@ -8,8 +8,6 @@ class Keyphrase
     'tis
     'twas
     've
-    10
-    39
     a
     a's
     able
