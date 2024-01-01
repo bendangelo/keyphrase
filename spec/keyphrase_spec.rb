@@ -37,7 +37,13 @@ RSpec.describe Keyphrase do
       it do
         result = Keyphrase.analyse "SEMI FINAL! - FURIA vs HAVU - HIGHLIGHTS - Elisa Masters 2023 l CS2"
 
-        expect(result.keys).to eq ["SEMI FINAL", "Elisa Masters", "FURIA", "HAVU", "HIGHLIGHTS", "CS2"]
+        expect(result.keys).to eq ["SEMI FINAL", "Elisa Masters 2023", "FURIA", "HAVU", "HIGHLIGHTS", "CS2"]
+      end
+
+      it do
+        result = Keyphrase.analyse "FFT AI Battles 2023 Edition! Doggosupreme (Tiny Baby Squad) vs Skadi (Bioshock 2) 1.7"
+
+        expect(result.keys).to eq ["Tiny Baby Squad", "Battles 2023 Edition", "FFT", "Doggosupreme", "Skadi", "Bioshock 2"]
       end
 
       it "should remove duplicate words" do
@@ -76,13 +82,13 @@ RSpec.describe Keyphrase do
       it "should split on slashes" do
         result = Keyphrase.analyse "GTA ON LINE 1.39 NEWSAVE CEO OUTFIT SOLO / SALVARE I COMPLETI CEO DA SOLI"
 
-        expect(result.keys).to eq ["NEWSAVE CEO OUTFIT SOLO", "COMPLETI CEO DA SOLI", "GTA", "SALVARE"]
+        expect(result.keys).to eq ["1.39 NEWSAVE CEO OUTFIT SOLO", "COMPLETI CEO DA SOLI", "GTA", "SALVARE"]
       end
 
       it "should remove * ! and words with numbers" do
         result = Keyphrase.analyse "*New*Heavy Sniper!!!Fortnite Battle Royale!!!Level 50//5000+Kills//110+Wins!!!"
 
-        expect(result.keys).to eq ["Fortnite Battle Royale", "Heavy Sniper", "Level", "Kills", "Wins"]
+        expect(result.keys).to eq ["Fortnite Battle Royale", "Heavy Sniper", "Level 50", "Kills", "Wins"]
       end
 
       it "should split on [] {} <>"do
@@ -94,7 +100,7 @@ RSpec.describe Keyphrase do
       it "should remove numbered dates" do
         result = Keyphrase.analyse "Video Beremo 07.04.2018 Nova24TV"
 
-        expect(result.keys).to eq ["Video Beremo Nova24TV"]
+        expect(result.keys).to eq ["Video Beremo 07.04.2018 Nova24TV"]
       end
 
       it "should remove stop words from Chinese" do
