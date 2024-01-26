@@ -109,6 +109,12 @@ RSpec.describe Keyphrase do
         expect(result.keys).to eq ["你好 我一方面什麼 這麼好"]
       end
 
+      it 'should split on emoji' do
+        result = Keyphrase.analyse "Study Ghibli Music For 2 Hours 🍀 Heal Your Body With Ghibli, Relax, Work, Sleep Deeply"
+
+        expect(result.keys).to eq ["Study Ghibli Music", "Sleep Deeply", "Ghibli", "2 Hours", "Heal", "Body", "Relax"]
+      end
+
     end
 
   end

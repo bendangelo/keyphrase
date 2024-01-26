@@ -9,7 +9,7 @@ class Keyphrase
   CLEAN_REGEX = /([^\p{L}a-zA-Z0-9\'\- \.]|(?<!\w)\.)/ # don't remove ' because it might be part of a stop word
   BLACKLIST_REGEX = /(?:^|\s)[^a-zA-Z\p{L}0-9]+\b|\'|\-/ # remove words with no letters, ie 123.23.12. And last chance to remove ' and -
   CLEAN_SPACES_REGEX = /^[0-9\s\.]+$|\s+/ # last phase. Remove extra whitespace and lone numbers
-  SENTENCES_REGEX = /[+!?,;:&\[\]\{\}\<\>\=\/\n\t\\"\\(\\)\u2019\u2013\|]|-(?!\w)|'(?=s)|(?<!\s)\.(?![a-zA-Z0-9])|(?<!\w)\#(?=\w)/u
+  SENTENCES_REGEX = /[+!?,;:&\[\]\{\}\<\>\=\/\n\t\\"\\(\\)\u2019\u2013\|]|-(?!\w)|'(?=s)|(?<!\s)\.(?![a-zA-Z0-9])|(?<!\w)\#(?=\w)|\p{Extended_Pictographic}+/u
 
   def self.analyse text, options={}
     @@keyphrase ||= Keyphrase.new
